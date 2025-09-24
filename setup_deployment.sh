@@ -78,13 +78,17 @@ fi
 
 # Copy Supervisor configuration
 print_status "Setting up Supervisor configuration..."
-sudo cp vectordb_supervisor.conf /etc/supervisor/conf.d/
+# Replace placeholders in supervisor config
+sed "s|PROJECT_DIR|$PROJECT_DIR|g; s|USER_NAME|$USER|g" vectordb_supervisor.conf > /tmp/vectordb_supervisor.conf
+sudo cp /tmp/vectordb_supervisor.conf /etc/supervisor/conf.d/vectordb_supervisor.conf
 sudo supervisorctl reread
 sudo supervisorctl update
 
 # Copy Nginx configuration
 print_status "Setting up Nginx configuration..."
-sudo cp nginx_vectordb.conf /etc/nginx/sites-available/vectordb
+# Replace placeholders in nginx config
+sed "s|PROJECT_DIR|$PROJECT_DIR|g" nginx_vectordb.conf > /tmp/nginx_vectordb.conf
+sudo cp /tmp/nginx_vectordb.conf /etc/nginx/sites-available/vectordb
 sudo ln -sf /etc/nginx/sites-available/vectordb /etc/nginx/sites-enabled/
 
 # Remove default Nginx site if it exists

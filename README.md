@@ -326,7 +326,7 @@ sudo supervisorctl tail vectordb_flask stderr
 sudo ss -tlnp | grep :5000
 
 # Stop conflicting services
-sudo supervisorctl stop city_lookup
+sudo supervisorctl stop vectordb_flask
 ```
 
 **Model loading issues:**

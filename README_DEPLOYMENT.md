@@ -90,8 +90,9 @@ pip install -r requirements.txt
 ### 3. Configure Supervisor
 
 ```bash
-# Copy Supervisor configuration
-sudo cp vectordb_supervisor.conf /etc/supervisor/conf.d/
+# Copy Supervisor configuration (with dynamic path replacement)
+sed "s|PROJECT_DIR|$(pwd)|g; s|USER_NAME|$USER|g" vectordb_supervisor.conf > /tmp/vectordb_supervisor.conf
+sudo cp /tmp/vectordb_supervisor.conf /etc/supervisor/conf.d/vectordb_supervisor.conf
 
 # Reload Supervisor configuration
 sudo supervisorctl reread
@@ -101,8 +102,9 @@ sudo supervisorctl update
 ### 4. Configure Nginx
 
 ```bash
-# Copy Nginx configuration
-sudo cp nginx_vectordb.conf /etc/nginx/sites-available/vectordb
+# Copy Nginx configuration (with dynamic path replacement)
+sed "s|PROJECT_DIR|$(pwd)|g" nginx_vectordb.conf > /tmp/nginx_vectordb.conf
+sudo cp /tmp/nginx_vectordb.conf /etc/nginx/sites-available/vectordb
 
 # Enable the site
 sudo ln -sf /etc/nginx/sites-available/vectordb /etc/nginx/sites-enabled/
@@ -190,7 +192,7 @@ sudo supervisorctl status vectordb_flask
 sudo systemctl status nginx
 ```
 
-## 🌐 Accessing the Application
+## Accessing the Application
 
 - **Main Application**: http://your-server-ip
 - **Health Check**: http://your-server-ip/health
@@ -327,7 +329,7 @@ If you encounter issues:
 4. Review configuration files
 5. Check system resources (CPU, memory, disk)
 
-## 📝 Maintenance
+## Maintenance
 
 ### Regular Tasks
 
