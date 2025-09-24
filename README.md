@@ -28,7 +28,7 @@ A production-ready Flask web service that uses AI-powered vector search to find 
 ### One-Command Setup
 ```bash
 # Clone the repository
-git clone <your-repository-url>
+git clone https://github.com/aiguanai/City-to-State---VectorDB
 cd c2s
 
 # Run complete setup (installs everything)
