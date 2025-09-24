@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indian Cities to States Lookup</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            margin: 2rem auto;
+            padding: 2rem;
+            max-width: 800px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .header h1 {
+            color: #2c3e50;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+        .search-container {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 0.75rem 1rem;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .btn-search {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+        .btn-search:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        .result-container {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            border: 1px solid #e9ecef;
+            display: none;
+        }
+        .result-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border-left: 4px solid #667eea;
+        }
+        .result-item:last-child {
+            margin-bottom: 0;
+        }
+        .city-name {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+        .state-name {
+            color: #27ae60;
+            font-weight: 500;
+            font-size: 1rem;
+        }
+        .confidence {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+        .spinner-border {
+            color: #667eea;
+        }
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        .stats {
+            background: #e3f2fd;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="main-container">
+            <div class="header">
+                <h1><i class="fas fa-map-marker-alt"></i> Indian Cities to States Lookup</h1>
+                <p>Find the state for any Indian city using AI-powered vector search</p>
+            </div>
+
+            <div class="search-container">
+                <form id="searchForm">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label for="cityInput" class="form-label">Enter City Name</label>
+                                <input type="text" class="form-control" id="cityInput" 
+                                       placeholder="e.g., Mumbai, Bangalore, Delhi..." 
+                                       required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="resultCount" class="form-label">Results</label>
+                                <select class="form-control" id="resultCount">
+                                    <option value="1">Top 1</option>
+                                    <option value="3" selected>Top 3</option>
+                                    <option value="5">Top 5</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary btn-search">
+                            <i class="fas fa-search"></i> Find State
+                        </button>
+                    </div>
+                </form>
+
+                <div class="loading" id="loading">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Searching for your city...</p>
+                </div>
+
+                <div class="result-container" id="resultContainer">
+                    <h5><i class="fas fa-map-marked-alt"></i> Search Results</h5>
+                    <div id="results"></div>
+                </div>
+            </div>
+
+            <div class="stats" id="stats">
+                <h6><i class="fas fa-info-circle"></i> About This Service</h6>
+                <p>Powered by AI vector search using sentence transformers. Contains data for all Indian states and cities with fuzzy matching capabilities.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const cityInput = document.getElementById('cityInput');
+            const resultCount = document.getElementById('resultCount');
+            const loading = document.getElementById('loading');
+            const resultContainer = document.getElementById('resultContainer');
+            const results = document.getElementById('results');
+            
+            const cityName = cityInput.value.trim();
+            if (!cityName) return;
+            
+            // Show loading
+            loading.style.display = 'block';
+            resultContainer.style.display = 'none';
+            
+            try {
+                const response = await fetch('/search_multiple', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        city: cityName,
+                        k: parseInt(resultCount.value)
+                    })
+                });
+                
+                const data = await response.json();
+                
+                // Hide loading
+                loading.style.display = 'none';
+                
+                if (data.success) {
+                    displayResults(data.results, data.query);
+                } else {
+                    showError(data.error || 'An error occurred');
+                }
+            } catch (error) {
+                loading.style.display = 'none';
+                showError('Network error: ' + error.message);
+            }
+        });
+        
+        function displayResults(results, query) {
+            const resultContainer = document.getElementById('resultContainer');
+            const resultsDiv = document.getElementById('results');
+            
+            resultsDiv.innerHTML = '';
+            
+            results.forEach((result, index) => {
+                const resultItem = document.createElement('div');
+                resultItem.className = 'result-item';
+                
+                const confidence = Math.round(result.confidence * 100);
+                const confidenceColor = confidence > 80 ? '#27ae60' : confidence > 60 ? '#f39c12' : '#e74c3c';
+                
+                resultItem.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="city-name">${result.city}</div>
+                            <div class="state-name">State: ${result.state}</div>
+                        </div>
+                        <div class="text-end">
+                            <div class="confidence" style="color: ${confidenceColor}">
+                                <i class="fas fa-percentage"></i> ${confidence}% match
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                resultsDiv.appendChild(resultItem);
+            });
+            
+            resultContainer.style.display = 'block';
+        }
+        
+        function showError(message) {
+            const resultContainer = document.getElementById('resultContainer');
+            const resultsDiv = document.getElementById('results');
+            
+            resultsDiv.innerHTML = `
+                <div class="error-message">
+                    <i class="fas fa-exclamation-triangle"></i> ${message}
+                </div>
+            `;
+            
+            resultContainer.style.display = 'block';
+        }
+        
+        // Auto-focus on input
+        document.getElementById('cityInput').focus();
+    </script>
+</body>
+</html>

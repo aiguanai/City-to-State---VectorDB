@@ -1,4 +1,16 @@
-sentence-transformers
-faiss-cpu
-pandas
-numpy
+# Core ML and Data Science libraries
+numpy>=1.24.0
+pandas>=1.5.0
+
+# Sentence Transformers for embeddings
+sentence-transformers>=2.2.0
+
+# FAISS vector database
+faiss-cpu>=1.7.4
+
+# Flask web framework
+flask>=2.3.0
+gunicorn>=21.0.0
+
+# Additional dependencies
+requests>=2.31.0
